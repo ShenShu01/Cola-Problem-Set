@@ -1,0 +1,71 @@
+对于此题，我们首先不难发现，对于0010，若要使其翻转后是另一个字串，所以选择的数必须同时包含 0 与 1 ，那么我们就可以给这个串分段
+对于选定的 l 与 r 所对应字符是相等的这个条件，我们可以发现翻转后段的数量与相对位置是不改变的。
+例如0010 =[0段][1段][0段]，翻转后0100也是一致的
+又因为可以进行任意此操作，我们不难得出，每次操作若认为是有效操作，它只会改变单独一个[0段]/[1段]的个数。
+例如：0010= [2 1 1] 0100=[1 1 2]，[0段]由2 1变为了1 2.
+额外注意：0的个数与1的个数始终不变，不能出现个数为0的段
+综上所述：我们只需要算出[0段]的不同排列，与[1段]的不同排列，数量相乘即可得到答案。
+例如：假设[0段]排列可以是{2 1}与{1 2};[1段]排列有{2 1}与{1 2};那么对于[0段]的每个排列，[1段]都有2个排列，结果就是2*2=4;
+
+最后附上AC代码：
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+
+int mod=998244353;
+int qm(int x,int n){
+	int res=1;
+	while(n){
+		if(n&1){
+			res*=x;
+			res%=mod; 
+		}
+		x*=x;
+		x%=mod;
+		n/=2;
+	}
+	return res;
+}
+int c(int x,int y){
+	int sum1=1,sum2=1;
+	if(x<=0||x<=y||y<=0)return 1;
+	do{
+		sum1*=x;
+		sum1%=mod;
+		sum2*=y;
+		sum2%=mod;
+		x--;
+	}
+	while(--y);
+	return (sum1*qm(sum2,mod-2))%mod;
+}
+signed main(){
+	int t;cin>>t;
+	while(t--){
+		int n;cin>>n;
+		string s;cin>>s;
+		vector<int>a,b;
+		int sum1=0,sum0=0,cnt0=0,cnt1=0;
+		for(int i=0;i<n;i++){
+			int c=s[i]-'0';
+			if(c==0&&sum1){
+				b.push_back(sum1);
+				sum1=0;
+			}
+			else if(c==1&&sum0){
+				a.push_back(sum0);
+				sum0=0;
+			}
+			if(c)sum1++,cnt1++;
+			else sum0++,cnt0++;
+		}
+		if(sum0)a.push_back(sum0);
+		if(sum1)b.push_back(sum1);
+		int res=1;
+		res*=c(cnt0-1,a.size()-1);
+		res%=mod; 
+		res*=c(cnt1-1,b.size()-1);
+		res%=mod;
+		cout<<res<<'\n';
+	}
+} 

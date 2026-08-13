@@ -1,0 +1,54 @@
+对于此题，我们看到a[i-1]-a[i]+a[i+1]时，不难看出其中含有差分，所以我们可以先用差分处理一下:
+对于a[i-1],a[i],a[i+1]有bi=ai-a(i−1),b(i+1)=a(i+1)−ai;然后再运算一次得到交换后会变成a[i-1],a[i-1]-a[i]+a[i+1],a[i+1],此时b[i]=a[i+1]-a[i],b[i+1]=a[i]-a[i-1];
+发现进行一次运算会交换差分，然后又因为有 **奇偶性** 限制，交换只能发生在连续的 **奇段** 或 **偶段**
+所以我们只需要先算出差分，然后对于每个段进行一次排序，得到最终差分数组，然后用此数值求出所求序列即可
+
+附上AC代码：
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+signed main(){
+	int t;cin>>t;
+	while(t--){
+		int n;cin>>n;
+		vector<int>a(n);
+		for(int i=0;i<n;i++) {
+			cin>>a[i];
+		}
+		vector<int>b(n-1);
+		for(int i=0;i<n-1;i++){
+			b[i]=a[i+1]-a[i];
+		}
+		vector<int>res;
+		int sum=a[0];
+		cout<<sum;
+		for(int i=0;i<n-1;i++){
+			if(res.size()==0){
+				res.push_back(b[i]);
+				continue;
+			}
+			if(abs(res.back())%2==abs(b[i])%2){
+				res.push_back(b[i]);
+			}
+			else{
+				sort(res.begin(),res.end());
+				for(int i=0;i<res.size();i++){
+					sum+=res[i];
+					cout<<' '<<sum;
+				}
+				res.resize(0);
+				res.push_back(b[i]);
+			}
+			if(i==n-2){
+				sort(res.begin(),res.end());
+				for(int i=0;i<res.size();i++){
+					sum+=res[i];
+					cout<<' '<<sum;
+				}
+				res.resize(0);
+				res.push_back(b[i]);
+			}
+		}
+		cout<<'\n';
+	}
+} 
